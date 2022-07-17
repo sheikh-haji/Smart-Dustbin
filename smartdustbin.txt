@@ -1,0 +1,85 @@
+#include<Servo.h>
+
+Servo Myservo;
+int pos;
+
+
+#define echoPin 2 
+#define trigPin 3 
+
+long duration; 
+int distance; 
+
+bool isClose=false;
+
+
+void setup() {
+  Myservo.attach(5);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  Serial.begin(9600); 
+}
+
+
+
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delay(5);
+  digitalWrite(trigPin, HIGH);
+  delay(5);
+  digitalWrite(trigPin, LOW);
+  
+  duration = pulseIn(echoPin, HIGH);
+  
+  distance = duration * 0.034 / 2; 
+  
+  Serial.println();
+  Serial.print("Distance: ");
+  Serial.print( distance );
+  Serial.println();
+
+
+
+
+  
+  if (distance < 20) {
+
+    if (!isClose) {
+      for(pos=0;pos<=180;pos++) {
+        Myservo.write(pos);
+        delay(15);
+      }      
+    }
+
+
+    isClose = true;
+
+
+  }
+  else {
+
+    if (isClose) {
+      delay(3000);
+      Serial.println("\n-----------------\n");
+      isClose = !isClose;
+    }
+
+      
+    while(pos > 0) {
+      Myservo.write(pos);
+      delay(15);
+      pos--;
+    }
+
+    while(pos < 0) {
+      Myservo.write(pos);
+      delay(15);
+      pos++;
+    }
+       
+  }
+
+
+
+  delay(100);
+}
